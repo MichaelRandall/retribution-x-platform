@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-m
+  labels:
+    app: hello-world-m
+spec:
+  replicas: 1  # <--- Change to 1 locally to turn it on, 0 to turn it off
+  selector:
+    matchLabels:
+      app: hello-world-m
+  template:
+    metadata:
+      labels:
+        app: hello-world-m
+    spec:
+      containers:
+      - name: hello-world-container
+        # Replace 'your-project-id' with your real GCP project ID
+        image: europe-west3-docker.pkg.dev/hello-world-project-499314/hello-world-m/hello-world-app:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "251Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-m-service
+spec:
+  type: ClusterIP  # Keeps it internal; use port-forwarding to view to avoid load balancer fees
+  selector:
+    app: hello-world-m
+  ports:
+  - port: 80
+    targetPort: 80
